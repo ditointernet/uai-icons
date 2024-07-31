@@ -24,6 +24,11 @@ const { TOKEN, FILE } = process.env;
  */
 const camelize = (s) => s.replace(/-./g, (x) => x[1].toUpperCase());
 
+const captalize = (s) => {
+  const string = camelize(s);
+  return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
 /**
  * Fetch the Figma file from the API.
  * @param {string} key - The Figma file key.
@@ -111,7 +116,7 @@ const getSVGsFromComponents = (key) => async (components) => {
         const svg = await response.text();
         progressBar.increment();
         return {
-          name: camelize(formatName(name)),
+          name: `Icon${captalize(camelize(formatName(name)))}`,
           fileName: formatName(name),
           svg: formatIconsSVG(svg)
         };

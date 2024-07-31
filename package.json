@@ -1,20 +1,22 @@
 {
   "name": "@dito-uai/icons",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "Dito's design system icons",
   "repository": "git+https://github.com/ditointernet/uai-icons.git",
   "publishConfig": {
     "access": "public"
   },
-  "main": "dist/index.js",
-  "module": "dist/index.cjs",
-  "types": "dist/index.d.ts",
+  "main": "index.js",
+  "module": "index.cjs",
+  "types": "index.d.ts",
   "files": [
-    "dist/"
+    "index.js",
+    "index.cjs",
+    "index.d.ts",
+    "index.d.mts"
   ],
   "scripts": {
     "build": "node figma-importer.mjs && tsup",
-    "build:types": "tsc --declaration --emitDeclarationOnly --declarationDir dist && cp src/svg.d.ts dist/",
     "semantic-release": "semantic-release"
   },
   "devDependencies": {
