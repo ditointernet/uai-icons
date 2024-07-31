@@ -165,7 +165,6 @@ const iconComponentTemplate = (svgRaw, componentName) => {
 
   const content = svg('svg')
     .attr('props', '...')
-    .attr('ref', 'forwardedRef')
     .toString()
     .replace(/stroke=['|"]currentColor['|"]/g, 'stroke={color}')
     .replace(/fill=['|"]currentColor['|"]/g, 'fill={color}')
