@@ -168,11 +168,11 @@ const iconComponentTemplate = (svgRaw, componentName) => {
   .toString()
   .replace(
     /stroke=['"](#[0-9A-Fa-f]{6}|#[0-9A-Fa-f]{3}|rgb\([0-9, ]+\)|rgba\([0-9, ]+\)|hsl\([0-9, %, ]+\))['"]/g,
-    "stroke={props.color}"
+    "stroke={props?.color ?? '#8D95A7'}"
   )
   .replace(
     /fill=['"](#[0-9A-Fa-f]{6}|#[0-9A-Fa-f]{3}|rgb\([0-9, ]+\)|rgba\([0-9, ]+\)|hsl\([0-9, %, ]+\))['"]/g,
-    "fill={props.color}"
+    "fill={props?.color ?? '#8D95A7'}"
   )
   .replace('props="..."', "{...props}");
 
