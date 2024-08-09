@@ -164,17 +164,17 @@ const iconComponentTemplate = (svgRaw, componentName) => {
   });
 
   const content = svg("svg")
-  .attr("props", "...")
-  .toString()
-  .replace(
-    /stroke=['"](#[0-9A-Fa-f]{6}|#[0-9A-Fa-f]{3}|rgb\([0-9, ]+\)|rgba\([0-9, ]+\)|hsl\([0-9, %, ]+\))['"]/g,
-    "stroke={props?.color ?? '#8D95A7'}"
-  )
-  .replace(
-    /fill=['"](#[0-9A-Fa-f]{6}|#[0-9A-Fa-f]{3}|rgb\([0-9, ]+\)|rgba\([0-9, ]+\)|hsl\([0-9, %, ]+\))['"]/g,
-    "fill={props?.color ?? '#8D95A7'}"
-  )
-  .replace('props="..."', "{...props}");
+    .attr("props", "...")
+    .toString()
+    .replace(
+      /stroke=['"](#[0-9A-Fa-f]{6}|#[0-9A-Fa-f]{3}|rgb\([0-9, ]+\)|rgba\([0-9, ]+\)|hsl\([0-9, %, ]+\))['"]/g,
+      "stroke='currentcolor'"
+    )
+    .replace(
+      /fill=['"](#[0-9A-Fa-f]{6}|#[0-9A-Fa-f]{3}|rgb\([0-9, ]+\)|rgba\([0-9, ]+\)|hsl\([0-9, %, ]+\))['"]/g,
+      "fill='currentcolor'"
+    )
+    .replace('props="..."', "{...props}");
 
   return `import React from 'react';
 export const ${componentName} = (props: React.SVGProps<SVGSVGElement>) => (${content});
