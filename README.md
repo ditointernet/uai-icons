@@ -6,7 +6,7 @@
 
 **3 - Abra um Pull Request (PR):** Crie um PR com as alterações necessárias.
 
-**4 - Atualize a versão no package.json:** Verifique se o arquivo package.json foi atualizado automaticamente pelo build. Caso contrário, faça a alteração manualmente.
+**4 - Atualize a versão no package.json:** Verifique se o arquivo package.json foi atualizado automaticamente pelo build. Caso contrário, faça a mudança de versão do package (por exemplo: `1.0.7` para `1.0.8`).
 
 **5 - Descreva o PR:** Ao abrir o PR, forneça um contexto claro do que está sendo adicionado ou alterado.
 
