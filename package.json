@@ -1,6 +1,6 @@
 {
   "name": "@dito-uai/icons",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "Dito's design system icons",
   "repository": "git+https://github.com/ditointernet/uai-icons.git",
   "publishConfig": {
@@ -23,7 +23,8 @@
   },
   "scripts": {
     "build": "node figma-importer.mjs && tsup",
-    "semantic-release": "semantic-release"
+    "semantic-release": "semantic-release",
+    "env:create": "./.env-pull.sh"
   },
   "devDependencies": {
     "@semantic-release/changelog": "6.0.1",
