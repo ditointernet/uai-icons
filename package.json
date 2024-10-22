@@ -1,6 +1,6 @@
 {
   "name": "@dito-uai/icons",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "description": "Dito's design system icons",
   "repository": "git+https://github.com/ditointernet/uai-icons.git",
   "publishConfig": {
