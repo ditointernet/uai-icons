@@ -20,11 +20,6 @@ jobs:
         with:
           fetch-depth: 1
 
-      - name: Setup Git
-        run: |
-          git config --global user.name 'GitHub Actions Bot'
-          git config --global user.email 'dito@users.noreply.github.com'
-
       - name: Setup node
         uses: actions/setup-node@v4
         with:
