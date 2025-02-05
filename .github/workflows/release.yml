@@ -37,6 +37,8 @@ jobs:
       - name: Release
         env:
           FIGMA: ${{ vars.FIGMA }}
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
           echo "${FIGMA}" | tr ';' '\n' > .env
           npm run build
