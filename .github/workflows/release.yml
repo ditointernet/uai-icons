@@ -40,6 +40,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
         run: |
+          git config --global user.email "ti@dito.com.br"
+          git config --global user.name "Dito bot"
           git commit --allow-empty -m "Feat: release new icons"   
           git push origin main
 
