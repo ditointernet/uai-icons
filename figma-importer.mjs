@@ -118,7 +118,7 @@ const getSVGsFromComponents = (key) => async (components) => {
         return {
           name: `Icon${captalize(camelize(formatName(name)))}`,
           fileName: formatName(name),
-          svg: formatIconsSVG(svg)
+          svg: formatIconsSVG(svg, formatName(name))
         };
       })
     );
@@ -135,9 +135,14 @@ const getSVGsFromComponents = (key) => async (components) => {
 /**
  * Optimize SVG data.
  * @param {string} svg - The raw SVG data.
+ * @param {string} prefix - Prefix for the SVG ids, to avoid collisions between icons.
  * @returns {string} - The optimized SVG data.
  */
-const formatIconsSVG = (svg) => optimize(svg, svgConfig).data;
+const formatIconsSVG = (svg, prefix) =>
+  optimize(svg, {
+    ...svgConfig,
+    plugins: [...svgConfig.plugins, { name: 'prefixIds', params: { prefix } }]
+  }).data;
 
 /**
  * Generate the icon component template.
