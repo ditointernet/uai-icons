@@ -30,6 +30,24 @@ const captalize = (s) => {
 }
 
 /**
+ * Call the Figma API and fail on error responses.
+ * @param {string} url - The Figma API URL.
+ * @returns {Promise<object>} - The response body as JSON.
+ */
+async function fetchFigmaAPI(url) {
+  const response = await fetch(url, {
+    headers: { 'X-Figma-Token': TOKEN },
+  });
+  const body = await response.json().catch(() => ({}));
+  if (!response.ok || body.err) {
+    throw new Error(
+      `Figma respondeu ${response.status}: ${body.err ?? response.statusText}`
+    );
+  }
+  return body;
+}
+
+/**
  * Fetch the Figma file from the API.
  * @param {string} key - The Figma file key.
  * @returns {Promise<object>} - The Figma file data as JSON.
@@ -37,15 +55,12 @@ const captalize = (s) => {
 async function fetchFigmaFile(key) {
   const spinner = ora('Loading Figma file').start();
   try {
-    const response = await fetch(`https://api.figma.com/v1/files/${key}`, {
-      headers: { 'X-Figma-Token': TOKEN },
-    });
+    const data = await fetchFigmaAPI(`https://api.figma.com/v1/files/${key}`);
     spinner.succeed('File loaded');
-    return await response.json();
+    return data;
   } catch (e) {
-    console.error(e);
     spinner.fail('Failed to load file');
-    return {};
+    throw e;
   }
 }
 
@@ -104,15 +119,21 @@ const getSVGsFromComponents = (key) => async (components) => {
   progressBar.start(ids.length, 0);
 
   try {
-    const response = await fetch(
-      `https://api.figma.com/v1/images/${key}?ids=${ids.join()}&format=svg`,
-      { headers: { 'X-Figma-Token': TOKEN } }
+    const { images } = await fetchFigmaAPI(
+      `https://api.figma.com/v1/images/${key}?ids=${ids.join()}&format=svg`
     );
-    const { images } = await response.json();
 
-    const result = await Promise.all(
+    return await Promise.all(
       components.map(async ({ id, name }) => {
+        if (!images?.[id]) {
+          throw new Error(`Figma não gerou o SVG do ícone ${name} (${id})`);
+        }
         const response = await fetch(images[id]);
+        if (!response.ok) {
+          throw new Error(
+            `Falha ao baixar o SVG do ícone ${name}: ${response.status}`
+          );
+        }
         const svg = await response.text();
         progressBar.increment();
         return {
@@ -122,13 +143,8 @@ const getSVGsFromComponents = (key) => async (components) => {
         };
       })
     );
-
+  } finally {
     progressBar.stop();
-    return result;
-  } catch (e) {
-    console.error(e);
-    progressBar.stop();
-    return [];
   }
 };
 
@@ -234,24 +250,38 @@ async function generateIndexFile(icons) {
  * @returns {Promise<void>} - Promise representing the completion of icon generation.
  */
 export async function generateFigmaIcons() {
-  if (!TOKEN) {
+  if (!TOKEN || !FILE) {
     console.error(
-      'The Figma API token is not defined. You need to set an environment variable `FIGMA_API_TOKEN` to run the script'
+      'TOKEN e FILE precisam estar definidos. Localmente, preencha os dois no .env (npm run env:create). Na CI, confira o secret FIGMA_TOKEN e a variable FIGMA_FILE.'
     );
-    return;
+    process.exit(1);
   }
 
   const data = await fetchFigmaFile(FILE);
   const spinner = ora('Parsing the file').start();
-  const components = getComponentsFromNode(
-    data?.document?.children
-      .filter(({ name }) => name.includes('Icons'))
-      ?.pop()
-      .children?.pop()
-  );
+  const iconsPage = data.document?.children
+    ?.filter(({ name }) => name.includes('Icons'))
+    .pop();
+  if (!iconsPage) {
+    spinner.fail('Parsing failed');
+    throw new Error('Página "Icons" não encontrada no arquivo do Figma');
+  }
+  const components = getComponentsFromNode(iconsPage.children?.pop() ?? {});
+  if (components.length === 0) {
+    spinner.fail('Parsing failed');
+    throw new Error('Nenhum componente encontrado na página "Icons" do Figma');
+  }
   spinner.stop();
 
   const icons = await getSVGsFromComponents(FILE)(components);
+
+  const fileNames = icons.map(({ fileName }) => fileName);
+  new Set(
+    fileNames.filter((fileName, index) => fileNames.indexOf(fileName) !== index)
+  ).forEach((fileName) =>
+    console.warn(`::warning::Ícone duplicado no Figma: ${fileName}`)
+  );
+
   await organizeDirectory();
 
   const progressBar = new cliProgress.SingleBar({
@@ -263,27 +293,25 @@ export async function generateFigmaIcons() {
   progressBar.start(icons.length, 0);
 
   const generatedIcons = icons.map((icon) => {
-    try {
-      const content = iconComponentTemplate(icon.svg, icon.name);
-      let filePath = `src/${icon.fileName}.tsx`;
-      fs.writeFileSync(path.join(__dirname, filePath), content, {
-        flag: 'w+'
-      });
-      progressBar.increment();
-      filePath = filePath.replace('src/', './').replace('.tsx', '');
+    const content = iconComponentTemplate(icon.svg, icon.name);
+    let filePath = `src/${icon.fileName}.tsx`;
+    fs.writeFileSync(path.join(__dirname, filePath), content, {
+      flag: 'w+'
+    });
+    progressBar.increment();
+    filePath = filePath.replace('src/', './').replace('.tsx', '');
 
-      return {
-        ...icon,
-        filePath
-      };
-    } catch (err) {
-      console.error(err);
-      return '';
-    }
+    return {
+      ...icon,
+      filePath
+    };
   });
 
   progressBar.stop();
   await generateIndexFile(generatedIcons);
 }
 
-generateFigmaIcons();
+generateFigmaIcons().catch((e) => {
+  console.error(e.cause ? `${e.message}: ${e.cause.message}` : e.message);
+  process.exit(1);
+});
