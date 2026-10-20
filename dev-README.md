@@ -30,4 +30,4 @@ ou rode `gh secret set FIGMA_TOKEN` e cole o token quando o comando pedir.
 O secret não pode ser lido depois de gravado.
 
 O token expira em até 90 dias.
-Responsável atual: ______ · Expira em: ______
+Responsável atual: Luis Muniz · Expira em: 18/01/2027
