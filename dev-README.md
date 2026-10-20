@@ -16,6 +16,7 @@ O `.env` está no `.gitignore`. Nunca faça commit dele.
 Figma, gera o pacote e o semantic-release publica a nova versão no npm.
 
 A publicação no npm usa *trusted publishing* (OIDC, `id-token: write`), então não existe `NPM_TOKEN`.
+A tag e a página de release no GitHub usam o `GITHUB_TOKEN` automático do Actions, sem token pessoal.
 
 ## Credenciais da CI
 
