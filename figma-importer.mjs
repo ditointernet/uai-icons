@@ -160,6 +160,9 @@ const iconComponentTemplate = (svgRaw, componentName) => {
       if (attrKey === 'xmlns:xlink') {
         svg(el).removeAttr(attrKey);
       }
+      if (attrKey === 'xlink:href') {
+        svg(el).attr('href', el.attribs[attrKey]).removeAttr(attrKey);
+      }
     });
   });
 
