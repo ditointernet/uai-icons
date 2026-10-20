@@ -44,10 +44,9 @@ jobs:
 
       - name: Build
         env:
-          FIGMA: ${{ vars.FIGMA }}
-        run: |
-          echo "${FIGMA}" | tr ';' '\n' > .env
-          npm run build
+          TOKEN: ${{ secrets.FIGMA_TOKEN }}
+          FILE: ${{ vars.FIGMA_FILE }}
+        run: npm run build
 
       - name: Create Empty Commit
         env:

@@ -1,15 +1,32 @@
-## Como publicar uma nova versão?
+## Build local
 
-**1 - Execute o comando de build:** No terminal, rode `npm run build` para gerar a nova versão do pacote.
+1. Instale o [GitHub CLI](https://cli.github.com/) e rode `gh auth login`.
+2. `npm ci`
+3. `npm run env:create`: cria o `.env` com o `FILE` preenchido.
+4. Gere o seu token no Figma (*Settings → Security → Personal access tokens*):
+   escopo **apenas File content: Read-only**, todo o resto **No access**.
+   Cole o token em `TOKEN=` no `.env`. A sua conta precisa ter acesso ao arquivo de ícones.
+5. `npm run build`
 
-**2 - Verifique os arquivos:** Confirme se os arquivos foram criados corretamente após o build.
+O `.env` está no `.gitignore`. Nunca faça commit dele.
 
-**3 - Abra um Pull Request (PR):** Crie um PR com as alterações necessárias.
+## Como publicar uma nova versão
 
-**4 - Atualize a versão no package.json:** Verifique se o arquivo package.json foi atualizado automaticamente pelo build. Caso contrário, faça a mudança de versão do package (por exemplo: `1.0.7` para `1.0.8`).
+*Actions → Release Uai Icons → Run workflow*. O workflow baixa os ícones do
+Figma, gera o pacote e o semantic-release publica a nova versão no npm.
 
-**5 - Descreva o PR:** Ao abrir o PR, forneça um contexto claro do que está sendo adicionado ou alterado.
+A publicação no npm usa *trusted publishing* (OIDC, `id-token: write`), então não existe `NPM_TOKEN`.
 
-**6 - Faça login no npm:** Autentique-se no npm com `npm login`, utilizando suas credenciais.
+## Credenciais da CI
 
-**7 - Publicação:** Após o PR ser aprovado e mesclado na branch principal (main), no terminal, execute `npm publish` para publicar a nova versão.
+| Nome | Tipo | Conteúdo |
+|---|---|---|
+| `FIGMA_TOKEN` | secret | token do Figma usado pela CI |
+| `FIGMA_FILE` | variable | id do arquivo de ícones no Figma |
+
+Para trocar o token, use *Settings → Secrets and variables → Actions → FIGMA_TOKEN → Update*
+ou rode `gh secret set FIGMA_TOKEN` e cole o token quando o comando pedir.
+O secret não pode ser lido depois de gravado.
+
+O token expira em até 90 dias.
+Responsável atual: ______ · Expira em: ______
